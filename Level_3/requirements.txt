@@ -10,3 +10,5 @@ openai>=1.14.0
 chromadb>=0.4.24
 pypdf>=4.1.0
 pytest>=8.0.0
+starlette>=0.38.0
+deepeval>=2.0.0
