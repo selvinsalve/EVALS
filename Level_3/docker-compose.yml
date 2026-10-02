@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  ai-order-assistant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_order_assistant
+    ports:
+      - "8000:8000"  # FastAPI Backend & Swagger Docs
+      - "8501:8501"  # Streamlit UI
+    environment:
+      - LLM_PROVIDER=demo
+      - DEMO_MODE=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - DATABASE_URL=sqlite:///./data/orders.db
+      - CHROMA_PERSIST_DIRECTORY=./data/chroma
+      - CHROMA_COLLECTION_NAME=ecommerce_policies
+      - BACKEND_URL=http://localhost:8000
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
