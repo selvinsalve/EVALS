@@ -75,3 +75,8 @@ desktop.ini
 .cache/
 .parcel-cache/
 .turbo/
+
+# =========================
+# Archives / Zips
+# =========================
+*.zip
