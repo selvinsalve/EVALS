@@ -9,6 +9,7 @@ from app.rag.vector_store import VectorStoreManager
 from app.api.health import router as health_router
 from app.api.orders import router as orders_router
 from app.api.assistant import router as assistant_router
+from app.api.evaluation import router as evaluation_router
 from app.utils.logging import logger
 
 settings = get_settings()
@@ -72,6 +73,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(health_router)
 app.include_router(orders_router)
 app.include_router(assistant_router)
+app.include_router(evaluation_router)
 
 
 if __name__ == "__main__":
