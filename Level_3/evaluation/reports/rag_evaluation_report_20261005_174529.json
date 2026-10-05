@@ -1,0 +1,746 @@
+{
+  "evaluation_type": "RAG",
+  "timestamp": "2026-10-05T17:45:29.455003+00:00",
+  "model_name": "qwen2.5:7b-instruct-q4_K_M",
+  "total_test_cases": 12,
+  "passed_test_cases": 3,
+  "failed_test_cases": 9,
+  "overall_pass_rate": 0.25,
+  "metric_averages": {
+    "Answer Relevancy": 0.7853174603174603,
+    "Faithfulness": 0.686111111111111,
+    "Contextual Precision": 0.7666666666666666,
+    "Contextual Recall": 0.7361111111111112,
+    "Contextual Relevancy": 0.2333333333333333
+  },
+  "metric_pass_rates": {
+    "Answer Relevancy": 0.8333333333333334,
+    "Faithfulness": 0.9166666666666666,
+    "Contextual Precision": 0.8333333333333334,
+    "Contextual Recall": 0.8333333333333334,
+    "Contextual Relevancy": 0.25
+  },
+  "case_results": [
+    {
+      "test_case_id": "rag_factual_001",
+      "category": "returns",
+      "input": "What is the standard return window for purchased items?",
+      "actual_output": "The standard return window for purchased items is 30 days from the confirmed delivery date. Returns initiated after this period cannot be accepted. For more details on return conditions and eligibility, please refer to our Return Policy. If you have any further questions, feel free to ask!",
+      "expected_output": "Customers may request a return within 30 days of the confirmed delivery date. Returns initiated after 30 days cannot be accepted.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Condition of Returned Items) ---\n[return_policy.md | Condition of Returned Items]\nTo qualify for a full refund:\n- Items must be in their original, unused condition with all tags attached.\n- All original manufacturer packaging, user manuals, accessories, and documentation must be included.\n- Footwear and apparel must be unworn and unwashed.\n- Electronics must have personal data cleared and factory settings restored.\n\n--- Document: return_policy.md (Section: 30-Day Return Window) ---\n[return_policy.md | 30-Day Return Window]\nCustomers may request a return within 30 days of the confirmed delivery date. Returns initiated after 30 days cannot be accepted.\n\n--- Document: refund_policy.md (Section: Partial Refunds & Restocking Fees) ---\n[refund_policy.md | Partial Refunds & Restocking Fees]\n- We do not charge restocking fees on standard returns initiated within the 30-day return window.\n- If items are returned missing original packaging, accessories, or manuals, a partial refund deduction (up to 15%) may be applied.\n- Original expedited shipping fees (e.g. Next-Day or 2-Day Air) are non-refundable unless the delay or return is due to carrier fault or company error."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the output does not contain any irrelevant statements that could distract from answering the question about the standard return window for purchased items.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.6666666666666666,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.67 because the actual output likely suggested accepting returns initiated after 30 days, contradicting the explicit statement in the retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 0.5,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.50 because the first and third nodes are ranked higher than the second node, which should be the other way around. The second node, ranked 2, directly states the 30-day return window, making it more relevant than the first and third nodes.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because both sentences in the expected output are accurately attributed to the nodes in the retrieval context, clearly defining the return policy.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.3333333333333333,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.33 because the retrieval context mentions a return window but does not specify it is for purchased items, whereas the input asks about the return window specifically for purchased items. The relevant statement about a 30-day return window is close but lacks the specificity of the input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 5850.832223892212,
+      "metadata": {
+        "difficulty": "easy",
+        "source_document": "return_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_factual_002",
+      "category": "cancellation",
+      "input": "Can I cancel an order once it is marked as SHIPPED or handed to the carrier?",
+      "actual_output": "Thank you for your question. According to our store policies, once an order is marked as SHIPPED or handed to the carrier, cancellations are generally not possible. For specific assistance or if you have any other concerns, please feel free to contact our customer support team at 1-800-555-0199 or support@example.com.",
+      "expected_output": "No, cancellation is strictly impossible once the package has been handed over to the carrier (FedEx, UPS, USPS, DHL). In this scenario, you must wait for delivery and either refuse delivery at the door or accept the parcel and initiate a standard return within 30 days.",
+      "retrieval_context": [
+        "--- Document: cancellation_policy.md (Section: Cancellation Windows and Rules) ---\n[cancellation_policy.md | Cancellation Windows and Rules]\n- **Orders in SHIPPED or OUT_FOR_DELIVERY Status**:\n  Cancellation is strictly impossible once the package has been handed over to the carrier (FedEx, UPS, USPS, DHL). In this scenario:\n  1. Allow the package to be delivered.\n  2. Refuse delivery at the door or accept the parcel and initiate a standard return within our 30-day return window.\n\n--- Document: cancellation_policy.md (Section: Cancellation Windows and Rules) ---\n[cancellation_policy.md | Cancellation Windows and Rules]\nWe strive to pack and dispatch orders as rapidly as possible. Because of our automated fulfillment pipeline, order cancellation is time-sensitive:\n\n- **Orders in PLACED or CONFIRMED Status**:\n  Cancellation is fully permitted and can be processed immediately through our AI Order Assistant, customer dashboard, or API. A 100% immediate refund is credited back to your original payment method.\n\n--- Document: cancellation_policy.md (Section: How to Cancel an Order) ---\n[cancellation_policy.md | How to Cancel an Order]\n1. Provide your Order ID (e.g. `Cancel ORD-1003`) to the AI Order Assistant.\n2. The assistant will verify cancellation eligibility against live fulfillment databases.\n3. If allowed, the order will be cancelled instantly, and a confirmation message with refund notice will be returned.\n4. If not allowed, the assistant will inform you why the order cannot be cancelled and guide you through the return process upon delivery."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the response directly addresses the user's query without any irrelevant statements.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.5,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.50 because the actual output incorrectly states that cancellations are generally not possible, contradicting the retrieval context which specifies that cancellations are impossible for SHIPPED or OUT_FOR_DELIVERY orders.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because all relevant nodes (nodes 1 and 2) are ranked higher than the irrelevant nodes (nodes 3 and 4), providing clear and direct answers to the question about canceling an order once it is SHIPPED or handed to the carrier.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the expected output perfectly aligns with the node in the retrieval context, providing a clear and unambiguous statement about the impossibility of cancellation after the package has been handed over to the carrier, and the subsequent steps to be taken.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.3333333333333333,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.33 because the retrieval context discusses cancellation after the package is handed over, which is not the same as the input asking about cancellation before the package is handed over to the carrier.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 2050.8532524108887,
+      "metadata": {
+        "difficulty": "easy",
+        "source_document": "cancellation_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_factual_003",
+      "category": "returns",
+      "input": "How much does return shipping cost if I return an item because I changed my mind?",
+      "actual_output": "Thank you for reaching out! According to our store policies, if you return an item due to buyer's remorse or preference changes, you will be responsible for the return shipping cost, which is a flat rate of $6.99. This cost will be deducted from your refund once the item is received and processed.\n\nIf you need further assistance or have any other questions, please feel free to ask!",
+      "expected_output": "For buyer's remorse or preference changes, the customer is responsible for the return shipping cost, which is a $6.99 flat-rate label fee deducted directly from the refund. If the return is due to store error or defective merchandise, the store provides a prepaid return shipping label at no cost.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Return Shipping Procedure) ---\n[return_policy.md | Return Shipping Procedure]\n1. Locate your Order ID (e.g., ORD-1002) in the portal or chat with our AI Order Assistant.\n2. If the return is due to our error (defective, damaged, or incorrect item), we provide a prepaid prepaid return shipping label.\n3. For buyer's remorse or preference changes, the customer is responsible for the return shipping cost ($6.99 flat-rate label deducted from refund).\n4. Drop off the packaged parcel at any authorized carrier drop-off location (UPS or FedEx depending on label).\n\n--- Document: refund_policy.md (Section: Partial Refunds & Restocking Fees) ---\n[refund_policy.md | Partial Refunds & Restocking Fees]\n- We do not charge restocking fees on standard returns initiated within the 30-day return window.\n- If items are returned missing original packaging, accessories, or manuals, a partial refund deduction (up to 15%) may be applied.\n- Original expedited shipping fees (e.g. Next-Day or 2-Day Air) are non-refundable unless the delay or return is due to carrier fault or company error.\n\n--- Document: refund_policy.md (Section: Eligibility Criteria) ---\n[refund_policy.md | Eligibility Criteria]\n- Refunds are issued for returned items meeting our Return Policy guidelines.\n- Cancellations processed prior to order dispatch receive an automatic 100% refund.\n- Damaged, defective, or incorrect items qualify for immediate replacement or full refund including original shipping charges.\n- Delayed orders where shipment is confirmed lost or transit exceeds 14 business days beyond the projected delivery window qualify for a full refund or free reshipment."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the output does not contain any irrelevant statements that could distract from the question about return shipping costs.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.6666666666666666,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.67 because the actual output incorrectly implies that the return shipping cost will be deducted from the refund, which contradicts the retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the single relevant node is ranked first and correctly identified as 'yes', with a clear reason provided. There are no irrelevant nodes to consider, hence the score is at its maximum.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 0.6666666666666666,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.67 because the retrieval context accurately supports the first part of the expected output regarding customer responsibility for return shipping costs, but lacks information about store errors or defective merchandise, which reduces the overall fit.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.5,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.50 because the retrieval context mentions the return shipping cost for buyer's remorse but does not provide the specific cost ($6.99 flat-rate label deducted from refund), which is relevant to the input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": true,
+      "latency_ms": 2426.2754917144775,
+      "metadata": {
+        "difficulty": "medium",
+        "source_document": "return_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_synthesis_001",
+      "category": "refunds_and_delivery",
+      "input": "My shipment is delayed. Under what circumstances am I entitled to a full refund for shipping delays?",
+      "actual_output": "Thank you for reaching out. According to our store policies, you may be entitled to a full refund for shipping delays under the following circumstances:\n\n1. If your tracking status has not updated for more than 5 consecutive business days, our support team can initiate a carrier trace.\n2. If an order is delayed due to severe weather, customs, or logistical bottlenecks, you may request a refund once the parcel is returned to sender or confirmed lost by the carrier.\n3. If your order has been delayed for more than 4 business days past its original projected delivery date without tracking movement, please alert our support assistant to initiate a priority carrier inquiry.\n4. Delayed orders where shipment is confirmed lost or transit exceeds 14 business days beyond the projected delivery window qualify for a full refund or free reshipment.\n\nFor further assistance, please contact our support team at 1-800-555-0199 or support@example.com. We aim to resolve your concerns promptly.",
+      "expected_output": "According to the delivery and refund policies, if an order shipment transit exceeds 14 business days beyond the projected delivery window or is confirmed lost in transit by the carrier, the store guarantees a 100% full refund to the original payment method or a complimentary free reshipment.",
+      "retrieval_context": [
+        "--- Document: refund_policy.md (Section: Eligibility Criteria) ---\n[refund_policy.md | Eligibility Criteria]\n- Refunds are issued for returned items meeting our Return Policy guidelines.\n- Cancellations processed prior to order dispatch receive an automatic 100% refund.\n- Damaged, defective, or incorrect items qualify for immediate replacement or full refund including original shipping charges.\n- Delayed orders where shipment is confirmed lost or transit exceeds 14 business days beyond the projected delivery window qualify for a full refund or free reshipment.\n\n--- Document: refund_policy.md (Section: Delayed Orders and Transit Guarantees) ---\n[refund_policy.md | Delayed Orders and Transit Guarantees]\n- If your tracking status has not updated for more than 5 consecutive business days, our support team can initiate a carrier trace.\n- If an order is delayed due to severe weather, customs, or logistical bottlenecks, you may request a refund once the parcel is returned to sender or confirmed lost by the carrier.\n\n--- Document: refund_policy.md (Section: Partial Refunds & Restocking Fees) ---\n[refund_policy.md | Partial Refunds & Restocking Fees]\n- We do not charge restocking fees on standard returns initiated within the 30-day return window.\n- If items are returned missing original packaging, accessories, or manuals, a partial refund deduction (up to 15%) may be applied.\n- Original expedited shipping fees (e.g. Next-Day or 2-Day Air) are non-refundable unless the delay or return is due to carrier fault or company error."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 0.8571428571428571,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.86 because the output misses addressing the specific circumstances for a full refund but includes irrelevant contact information for support.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because there are no contradictions in the actual output.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because all relevant nodes are ranked higher than the irrelevant node. The first two nodes directly address the circumstances under which a full refund is entitled for shipping delays, while the third node is about restocking fees and is ranked last.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the expected output aligns perfectly with the 3rd node in the retrieval context, which explicitly states the conditions for a full refund or free reshipment in case of delayed orders.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.3333333333333333,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.33 because the retrieval context contains statements about refunds for specific delay circumstances, which are somewhat relevant to the input, but the majority of the context is irrelevant, leading to a low score.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 4178.459882736206,
+      "metadata": {
+        "difficulty": "hard",
+        "source_document": "delivery_policy.md / refund_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_synthesis_002",
+      "category": "damaged_goods",
+      "input": "If an item arrives damaged, do I have to pay the $6.99 return shipping fee, and how quickly must I report it?",
+      "actual_output": "If an item arrives damaged, you do not need to pay the $6.99 return shipping fee for a replacement item. We will provide a prepaid carrier label for you to return the damaged item. However, please report the damage within 7 days of package delivery to ensure a swift resolution.\n\nFor defective items or those that do not work as expected, the reporting period is 14 days from the receipt of the item. If you need assistance locating your Order ID or have any further questions, feel free to contact our support team at 1-800-555-0199 or support@example.com.",
+      "expected_output": "No, you do not have to pay the $6.99 return shipping fee. When an item arrives damaged or defective, the store provides a prepaid return shipping label free of charge. However, damage must be reported within 48 hours of delivery with photographic evidence of both packaging and the item.",
+      "retrieval_context": [
+        "--- Document: damaged_order_policy.md (Section: Resolution Options) ---\n[damaged_order_policy.md | Resolution Options]\n- **Free Replacement**: We will ship a brand-new replacement item via expedited shipping immediately upon claim submission.\n- **Full Refund**: If you prefer not to receive a replacement, or if the item is currently out of stock, we will issue a full refund including original shipping charges.\n- **No Return Required**: In most minor damage or crushed box cases, you will not be required to ship the broken item back. If return is required, we provide a prepaid prepaid carrier label.\n\n--- Document: damaged_order_policy.md (Section: Reporting Period) ---\n[damaged_order_policy.md | Reporting Period]\n- **Transit Damage / Missing Items**: Please report within 7 days of package delivery.\n- **Defective / Non-Working Electronics**: Please report within 14 days of receipt (covered under manufacturer warranty thereafter).\n\n--- Document: damaged_order_policy.md (Section: Immediate Guarantee) ---\n[damaged_order_policy.md | Immediate Guarantee]\nWe take extensive care in packaging your orders. However, if your order arrives damaged during transit, has defective parts, or includes items different from what you ordered, we guarantee a swift resolution at zero additional cost to you."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 0.8,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.80 because the output did not include irrelevant statements, but it could be higher if it directly addressed the specific question about return shipping and reporting period.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.6,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.60 because the actual output incorrectly states the return shipping fee is waived and the damage reporting period is 14 days, contradicting the context which mentions no fee waiver and a 7-day period.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the relevant node (rank 1) is correctly ranked higher, addressing the return shipping fee. The second node (rank 2) is irrelevant as it does not provide information about the 48-hour reporting period, which is not explicitly mentioned in the input.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because all sentences in the expected output are accurately and completely supported by the nodes in the retrieval context, with no unsupportive reasons present.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the retrieval context does not contain any information related to return shipping fees or the time limit for reporting damaged items, which are the key concerns in the input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 3784.7657203674316,
+      "metadata": {
+        "difficulty": "hard",
+        "source_document": "damaged_order_policy.md / return_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_factual_004",
+      "category": "refunds",
+      "input": "After my returned package arrives at your warehouse, how long does warehouse inspection take, and when will the refund reflect on my credit card?",
+      "actual_output": "Once our warehouse receives your returned package, the inspection process is completed within 2 business days. You will receive an automated email notification confirming whether your return has been accepted and if a refund has been initiated.\n\nFor refunds, the timeline varies based on the payment method:\n- For credit or debit card payments, refunds typically appear on your statement within 3 to 5 business days, depending on your card issuer.\n- For PayPal or digital wallet payments, refunds are processed within 24 to 48 hours.\n- Store credit or gift cards are available immediately upon return inspection.\n\nIf you have any further questions or need assistance, please feel free to contact our support team at 1-800-555-0199 or support@example.com.",
+      "expected_output": "Once received at the warehouse, inspection is completed within 2 business days. Once approved, the refund is issued to your original payment method, and typically reflects on your credit card billing statement within 3 to 5 business days.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Return Inspection Timeline) ---\n[return_policy.md | Return Inspection Timeline]\n- Once our warehouse receives the returned package, inspection is completed within 2 business days.\n- You will receive an automated email notification confirming whether your return has been accepted and refund initiated.\n\n--- Document: refund_policy.md (Section: Refund Processing Timeline) ---\n[refund_policy.md | Refund Processing Timeline]\n- **Credit Card / Debit Card**: Once approved, refunds appear on your credit or debit statement within 3 to 5 business days, depending on your card issuer.\n- **PayPal / Digital Wallets**: Processed within 24 to 48 hours.\n- **Store Credit / Gift Cards**: Available immediately upon return inspection.\n\n--- Document: refund_policy.md (Section: Delayed Orders and Transit Guarantees) ---\n[refund_policy.md | Delayed Orders and Transit Guarantees]\n- If your tracking status has not updated for more than 5 consecutive business days, our support team can initiate a carrier trace.\n- If an order is delayed due to severe weather, customs, or logistical bottlenecks, you may request a refund once the parcel is returned to sender or confirmed lost by the carrier."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 0.6666666666666666,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.67 because the response directly addresses the user's queries about warehouse inspection time and refund processing, with no irrelevant statements. However, it could be more detailed or include estimated times to increase the score.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.8333333333333334,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.83 because the actual output incorrectly assumed the presence of contact information for the support team, which contradicts the provided context that does not mention any such details.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 0.7000000000000001,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.70 because the first and fifth nodes, which are ranked 1 and 5, are relevant and correctly ranked as 'yes'. However, the second, third, and sixth nodes, ranked 2, 3, and 6, are relevant but ranked as 'no', which lowers the score. The fourth node, ranked 4, is also relevant and correctly ranked as 'yes', but its presence does not significantly impact the score as it is already above the threshold.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because all sentences in the expected output are accurately and completely supported by the nodes in retrieval context, providing a clear and consistent timeline for return inspection and refund processing.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.6,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.60 because the retrieval context includes relevant information about warehouse inspection time (2 business days) and refund processing time (3 to 5 business days), but does not directly address the specific questions about the refund timeline and credit card reflection, leading to a moderate relevancy.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": true,
+      "latency_ms": 4109.802961349487,
+      "metadata": {
+        "difficulty": "medium",
+        "source_document": "refund_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_factual_005",
+      "category": "returns",
+      "input": "Can I return an activated gift card or opened intimate apparel?",
+      "actual_output": "Based on our store policies, activated gift cards and opened intimate apparel are considered non-returnable items due to safety, hygiene, and copyright reasons.\n\nIf you have any further questions or need assistance with other items, feel free to ask!",
+      "expected_output": "No. Activated gift cards, downloadable software products, perishable items, and personal grooming or intimate apparel with unsealed or opened packaging are strictly non-returnable and non-refundable for hygiene, health, safety, and copyright reasons.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Non-Returnable Items) ---\n[return_policy.md | Non-Returnable Items]\nThe following categories are strictly non-returnable for safety, hygiene, and copyright reasons:\n- Perishable goods (food, organic beverages, coffee beans).\n- Downloadable software products, digital licenses, and activated gift cards.\n- Intimate apparel, swimwear, and personal health/grooming items if packaging is opened.\n- Custom-engraved or personalized merchandise.\n\n--- Document: general_faq.md (Section: Are gift receipts or gift wrapping options available?) ---\n[general_faq.md | Are gift receipts or gift wrapping options available?]\n- Yes, gift messaging and packing slips without price information can be selected during checkout.\n\n--- Document: return_policy.md (Section: Condition of Returned Items) ---\n[return_policy.md | Condition of Returned Items]\nTo qualify for a full refund:\n- Items must be in their original, unused condition with all tags attached.\n- All original manufacturer packaging, user manuals, accessories, and documentation must be included.\n- Footwear and apparel must be unworn and unwashed.\n- Electronics must have personal data cleared and factory settings restored."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the response directly addresses the user's query without any irrelevant statements.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because there are no contradictions in the actual output.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because all relevant nodes (nodes 1 and 3) are ranked higher than the irrelevant node (node 2), correctly identifying that activated gift cards and opened intimate apparel are non-returnable items.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the expected output precisely matches the content of the 1st node in 'return_policy.md | Non-Returnable Items', covering all specified non-returnable categories without any discrepancies.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.5,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.50 because the retrieval context contains a relevant statement that 'Activated gift cards are non-returnable,' but it does not address the specific question about returned opened intimate apparel, which is irrelevant to the input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": true,
+      "latency_ms": 2116.25337600708,
+      "metadata": {
+        "difficulty": "medium",
+        "source_document": "return_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_distractor_001",
+      "category": "returns",
+      "input": "I was traveling in Europe last month with my cousin and bought some shoes online. The weather was rainy and cold. What is your policy on returning footwear if it has already been worn outdoors?",
+      "actual_output": "Thank you for reaching out! According to our return policy, footwear must be in their original, unused condition with all tags attached and must not have been worn outdoors. Since you mentioned the shoes were worn in rainy and cold weather, they may not meet the return condition as specified. However, we are here to help! If you believe the shoes are still in good condition to be returned, you can initiate a return within 30 days of receiving your order. Please note that a partial refund may be applied if the shoes are missing any original packaging, accessories, or manuals.\n\nFor further assistance, you can contact our support team at 1-800-555-0199 or support@example.com. We're here to help you with any questions or concerns!",
+      "expected_output": "Footwear and apparel items must be unworn, unwashed, and in original condition with all tags attached to qualify for a return. Items showing signs of wear or outdoor use cannot be accepted for a full refund.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Condition of Returned Items) ---\n[return_policy.md | Condition of Returned Items]\nTo qualify for a full refund:\n- Items must be in their original, unused condition with all tags attached.\n- All original manufacturer packaging, user manuals, accessories, and documentation must be included.\n- Footwear and apparel must be unworn and unwashed.\n- Electronics must have personal data cleared and factory settings restored.\n\n--- Document: return_policy.md (Section: Non-Returnable Items) ---\n[return_policy.md | Non-Returnable Items]\nThe following categories are strictly non-returnable for safety, hygiene, and copyright reasons:\n- Perishable goods (food, organic beverages, coffee beans).\n- Downloadable software products, digital licenses, and activated gift cards.\n- Intimate apparel, swimwear, and personal health/grooming items if packaging is opened.\n- Custom-engraved or personalized merchandise.\n\n--- Document: refund_policy.md (Section: Partial Refunds & Restocking Fees) ---\n[refund_policy.md | Partial Refunds & Restocking Fees]\n- We do not charge restocking fees on standard returns initiated within the 30-day return window.\n- If items are returned missing original packaging, accessories, or manuals, a partial refund deduction (up to 15%) may be applied.\n- Original expedited shipping fees (e.g. Next-Day or 2-Day Air) are non-refundable unless the delay or return is due to carrier fault or company error."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the response directly addresses the query about return policies for worn footwear without including any irrelevant statements.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.6,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.60 because the actual output incorrectly states that footwear can be worn outdoors for a full refund and that no partial refund deduction will be applied, contradicting the retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the single relevant node (ranked 1) directly addresses the policy on returning worn footwear, which is exactly what the input is asking about. There are no irrelevant nodes to rank lower, hence the score is at 1.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the expected output clearly and concisely states the condition requirements for returnable items, which aligns perfectly with the information provided in the node in retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the retrieval context does not contain any relevant information about the policy on returning footwear that has already been worn outdoors, as all provided statements are irrelevant to the input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 3969.4972038269043,
+      "metadata": {
+        "difficulty": "medium",
+        "source_document": "return_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_negative_001",
+      "category": "shipping",
+      "input": "Do you offer supersonic suborbital rocket delivery to Antarctica?",
+      "actual_output": "\ud83d\udee1\ufe0f **Guardrail Notice**: I am specialized exclusively as an **AI Order Assistant** for this store.\n\nI can only help with order inquiries, delivery tracking, cancellations, returns, refunds, and store policies. I cannot assist with external topics such as weather forecasts, general world knowledge, or coding.\n\nIf you have a question about an order or store policy, please feel free to ask!",
+      "expected_output": "The store policies do not offer supersonic suborbital rocket delivery to Antarctica. Shipping methods are limited to Standard, Expedited, and Overnight delivery via FedEx, UPS, USPS, and DHL within serviced regions. Please contact customer support for special shipping inquiries.",
+      "retrieval_context": [
+        "Shipping Methods: We partner with FedEx, UPS, USPS, and DHL Express to offer Standard Ground (3-5 business days), Expedited (2 business days), and Overnight Priority delivery.",
+        "If the retrieved policy context does not contain sufficient details to answer, politely state that the specific policy information is unavailable and offer customer service contact details."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the output did not contain any irrelevant statements, and the AI's response was focused on the given input without introducing external or unrelated topics.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.5,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.50 because the actual output incorrectly includes information about the AI Order Assistant's capabilities, which are not mentioned in the retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the first node, ranked 1, is relevant as it provides information about available shipping methods, which is directly related to the input. The second node, ranked 2, is marked as irrelevant since it does not address supersonic suborbital rocket delivery to Antarctica and only serves as a fallback statement.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 0.5,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.50 because the retrieval context mentions standard shipping methods with FedEx, UPS, USPS, and DHL, but does not address supersonic suborbital rocket delivery to Antarctica, which is unsupported.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the retrieval context does not mention supersonic suborbital rocket delivery to Antarctica, and there are no relevant statements provided that align with the input query.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 1267.1959400177002,
+      "metadata": {
+        "difficulty": "negative",
+        "source_document": "shipping_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_negative_002",
+      "category": "general_faq",
+      "input": "Will you match the price if I find the same product $20 cheaper on Amazon?",
+      "actual_output": "Thank you for reaching out! Our store does not have a price matching policy. However, we strive to offer competitive prices and often have promotions. If you find the same product $20 cheaper on Amazon, you can contact our customer support for further assistance. We're here to help! You can reach us at 1-800-555-0199 or support@example.com.",
+      "expected_output": "Our current policy documentation does not state a competitor price matching guarantee. For special price inquiries or promotional adjustments, please reach out to customer support at support@example.com or 1-800-555-0199.",
+      "retrieval_context": [
+        "If the retrieved policy context does not contain sufficient details to answer, politely state that the specific policy information is unavailable and offer customer service contact details (1-800-555-0199 or support@example.com)."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 0.2,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.20 because the response directly addresses the user's query about price matching without any irrelevant statements, making it fully relevant.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.6666666666666666,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.67 because the actual output incorrectly implies the presence of a price matching policy, which is not mentioned in the retrieval context, and it also omits the lack of specific contact information for such a policy.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the single relevant node (ranked 1) correctly suggests offering customer service contact details, which directly addresses the user's query. There are no irrelevant nodes to consider, hence the score is at its maximum.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the retrieval context only mentions providing customer service contact details when specific policy information is unavailable, but does not address the absence of a competitor price matching guarantee or special price inquiries.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the retrieval context does not address price matching policies or customer service related to finding cheaper products on Amazon, which are directly relevant to the user's input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 2681.539297103882,
+      "metadata": {
+        "difficulty": "negative",
+        "source_document": "general_faq.md"
+      }
+    },
+    {
+      "test_case_id": "rag_hallucination_001",
+      "category": "hallucination_trap",
+      "input": "I heard your store offers an unconditional 50-year lifetime warranty on all electronics. How do I file a lifetime claim?",
+      "actual_output": "Hello! Thank you for reaching out. Our store does not offer an unconditional 50-year lifetime warranty on all electronics. However, we do have a robust warranty and return policy for defective products. If you believe you have received a defective electronic item, please follow these steps:\n\n1. **Take Photos**: Capture clear photographs of the damaged product and any relevant packaging.\n2. **Contact Support**: Email support@example.com or message our AI Order Assistant with your Order ID (e.g., ORD-1001) and include the subject line \"Defective Electronic Item - [Your Order ID]\". Our team will review your case.\n3. **Keep Original Packaging**: Retain the original packaging and any accessories until the claim is reviewed.\n\nFor items covered under the manufacturer's warranty, please contact the manufacturer directly. If the issue is related to transit damage, please report it within 7 days of package delivery.\n\nIf you have any further questions or need assistance, feel free to reach out. Thank you!",
+      "expected_output": "That is incorrect. The store does not offer an unconditional 50-year lifetime warranty. Standard returns are accepted within 30 days of delivery, and defective electronics reported within 48 hours receive replacement or refund. Manufacturer warranties apply separately thereafter.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Condition of Returned Items) ---\n[return_policy.md | Condition of Returned Items]\nTo qualify for a full refund:\n- Items must be in their original, unused condition with all tags attached.\n- All original manufacturer packaging, user manuals, accessories, and documentation must be included.\n- Footwear and apparel must be unworn and unwashed.\n- Electronics must have personal data cleared and factory settings restored.\n\n--- Document: damaged_order_policy.md (Section: Resolution Options) ---\n[damaged_order_policy.md | Resolution Options]\n- **Free Replacement**: We will ship a brand-new replacement item via expedited shipping immediately upon claim submission.\n- **Full Refund**: If you prefer not to receive a replacement, or if the item is currently out of stock, we will issue a full refund including original shipping charges.\n- **No Return Required**: In most minor damage or crushed box cases, you will not be required to ship the broken item back. If return is required, we provide a prepaid prepaid carrier label.\n\n--- Document: damaged_order_policy.md (Section: Reporting Period) ---\n[damaged_order_policy.md | Reporting Period]\n- **Transit Damage / Missing Items**: Please report within 7 days of package delivery.\n- **Defective / Non-Working Electronics**: Please report within 14 days of receipt (covered under manufacturer warranty thereafter)."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 0.9,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.90 because the output directly contradicts the customer's claim about the 50-year warranty and does not address how to file a lifetime claim, which are key issues in the input.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 0.2,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.20 because the actual output contradicts the context by suggesting a 14-day period for all claims, whereas the context specifies different timeframes for manufacturer's warranty and transit damage.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the single 'no' verdict is ranked first, indicating that the system incorrectly prioritized irrelevant information. The first node's reason clearly states it does not address the specific warranty claim, making it less relevant than a 'yes' verdict would be.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because none of the sentences in the expected output can be attributed to the node(s) in retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.00 because the retrieval context does not contain any information related to the process of filing a lifetime claim for a warranty, which is the focus of the input. All provided reasons for irrelevancy correctly state that the context is about different topics such as full refunds, replacement items, and manufacturer warranties, none of which are relevant to the input.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 4915.982484817505,
+      "metadata": {
+        "difficulty": "adversarial",
+        "source_document": "general_faq.md / return_policy.md"
+      }
+    },
+    {
+      "test_case_id": "rag_ambiguous_001",
+      "category": "returns",
+      "input": "Can I return something?",
+      "actual_output": "Certainly! To return an item, it must meet the following conditions:\n\n- Be in its original, unused condition with all tags attached.\n- Include all original manufacturer packaging, user manuals, accessories, and documentation.\n- For footwear and apparel, ensure they are unworn and unwashed.\n- For electronics, clear personal data and restore factory settings.\n\nReturns must be initiated within 30 days of the confirmed delivery date. If your order meets these criteria, you can proceed with a return. For more details or assistance, feel free to contact our support team at 1-800-555-0199 or support@example.com.",
+      "expected_output": "Yes, you can return items within 30 days of delivery provided they are in original, unused condition with tags and packaging intact. For remorse returns, a $6.99 shipping fee applies, while returns for defective or damaged items are free.",
+      "retrieval_context": [
+        "--- Document: return_policy.md (Section: Condition of Returned Items) ---\n[return_policy.md | Condition of Returned Items]\nTo qualify for a full refund:\n- Items must be in their original, unused condition with all tags attached.\n- All original manufacturer packaging, user manuals, accessories, and documentation must be included.\n- Footwear and apparel must be unworn and unwashed.\n- Electronics must have personal data cleared and factory settings restored.\n\n--- Document: return_policy.md (Section: 30-Day Return Window) ---\n[return_policy.md | 30-Day Return Window]\nCustomers may request a return within 30 days of the confirmed delivery date. Returns initiated after 30 days cannot be accepted.\n\n--- Document: refund_policy.md (Section: Eligibility Criteria) ---\n[refund_policy.md | Eligibility Criteria]\n- Refunds are issued for returned items meeting our Return Policy guidelines.\n- Cancellations processed prior to order dispatch receive an automatic 100% refund.\n- Damaged, defective, or incorrect items qualify for immediate replacement or full refund including original shipping charges.\n- Delayed orders where shipment is confirmed lost or transit exceeds 14 business days beyond the projected delivery window qualify for a full refund or free reshipment."
+      ],
+      "tools_called": [],
+      "expected_tools": [],
+      "metrics": [
+        {
+          "metric_name": "Answer Relevancy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because the output directly addresses the question without any irrelevant statements, making it fully relevant.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Faithfulness",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because there are no contradictions in the actual output.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Precision",
+          "score": 1.0,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 1.00 because all relevant nodes (nodes 1 and 2) are ranked higher than the irrelevant nodes (nodes 3 and 4), which are correctly identified as not directly related to the conditions for returns within 30 days.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Recall",
+          "score": 0.6666666666666666,
+          "threshold": 0.5,
+          "passed": true,
+          "reason": "The score is 0.67 because the retrieval context does not explicitly mention the 30-day return period, which is a key component of the expected output, particularly relevant to the second node in the retrieval context.",
+          "strict_mode": false
+        },
+        {
+          "metric_name": "Contextual Relevancy",
+          "score": 0.2,
+          "threshold": 0.5,
+          "passed": false,
+          "reason": "The score is 0.20 because the retrieval context primarily discusses the conditions of returned items, which is irrelevant to the general question of whether something can be returned. However, the statements 'Customers may request a return within 30 days of the confirmed delivery date.' and 'Returns initiated after 30 days cannot be accepted.' are relevant, but their presence does not significantly improve the relevancy score due to the overwhelming number of irrelevant statements.",
+          "strict_mode": false
+        }
+      ],
+      "all_passed": false,
+      "latency_ms": 3832.0674896240234,
+      "metadata": {
+        "difficulty": "easy",
+        "source_document": "return_policy.md"
+      }
+    }
+  ]
+}
