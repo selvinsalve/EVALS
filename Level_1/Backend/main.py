@@ -378,6 +378,7 @@
 import csv
 import io
 import json
+import math
 import os
 import shutil
 import tempfile
@@ -500,15 +501,71 @@ def serialize_golden(golden: Any) -> GoldenModel:
 
 def extract_sqlite_to_markdown(db_path: Path) -> str:
     import sqlite3
-    parts = [f"# Database Overview: {db_path.name}\n"]
     conn = sqlite3.connect(str(db_path))
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = [r[0] for r in cursor.fetchall() if not r[0].startswith("sqlite_")]
         if not tables:
-            return parts[0] + "Database contains no user tables.\n"
+            return f"# Database: {db_path.name}\nDatabase contains no tables.\n"
 
+        # Specialized relational handler for e-commerce / order databases
+        if "orders" in tables and "customers" in tables:
+            parts = [
+                f"# Enterprise Order Management Database: {db_path.name}\n",
+                "## Privacy and Access Control Rules\n",
+                "- Each order belongs strictly to one customer ID.",
+                "- Cross-customer order comparisons or queries combining orders from different customers are strictly invalid and prohibited by customer data privacy policies.\n",
+                "## Verified Customer Orders & Package Manifests\n",
+            ]
+
+            cursor.execute("""
+                SELECT o.order_id, o.customer_id, c.name, c.email, o.status, o.total_amount,
+                       COALESCE(o.currency, 'USD'), o.carrier, o.tracking_number, o.payment_status
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.customer_id
+                ORDER BY o.customer_id, o.order_id
+                LIMIT 20
+            """)
+            orders = cursor.fetchall()
+
+            for ord_row in orders:
+                order_id, cust_id, cust_name, email, status, total_amount, currency, carrier, tracking, payment = ord_row
+                carrier_str = carrier or "Pending Carrier"
+                tracking_str = tracking or "Not Assigned"
+
+                parts.append(f"### Order `{order_id}`")
+                parts.append(f"- **Owner**: Customer `{cust_name}` (`{cust_id}` - {email}).")
+                parts.append(f"- **Order Status**: `{status}`")
+                parts.append(f"- **Total Order Amount**: ${total_amount:.2f} {currency} (Payment: `{payment}`)")
+                parts.append(f"- **Shipping Carrier & Tracking**: {carrier_str} (Tracking #{tracking_str})")
+
+                # Fetch exact item records for this specific order
+                if "order_items" in tables:
+                    cursor.execute(
+                        "SELECT product_name, quantity, unit_price FROM order_items WHERE order_id = ? ORDER BY id",
+                        (order_id,),
+                    )
+                    items = cursor.fetchall()
+                    parts.append(f"- **Package Items ({len(items)} distinct products, total quantity: {sum(it[1] for it in items)} items)**:")
+                    for item in items:
+                        parts.append(f"  * {item[1]}x {item[0]} (${item[2]:.2f} each)")
+
+                # Fetch shipment telemetry if available
+                if "shipments" in tables:
+                    cursor.execute(
+                        "SELECT status, current_location FROM shipments WHERE order_id = ?",
+                        (order_id,),
+                    )
+                    shipment = cursor.fetchone()
+                    if shipment:
+                        parts.append(f"- **Shipment Status**: `{shipment[0]}` (Location: {shipment[1] or 'In Transit'})")
+
+                parts.append("")  # separator
+            return "\n".join(parts)
+
+        # Generic SQLite table serializer
+        parts = [f"# Database Overview: {db_path.name}\n"]
         parts.append(
             f"**Database contains {len(tables)} tables:** "
             + ", ".join(f"`{t}`" for t in tables) + "\n"
@@ -521,10 +578,11 @@ def extract_sqlite_to_markdown(db_path: Path) -> str:
             row = cursor.fetchone()
             if row and row[0]:
                 parts.append(f"**Schema:**\n```sql\n{row[0]}\n```\n")
-            cursor.execute(f'SELECT * FROM "{table}" LIMIT 100;')
+            cursor.execute(f'SELECT * FROM "{table}" LIMIT 5;')
             cols = [d[0] for d in cursor.description] if cursor.description else []
             rows = cursor.fetchall()
             if cols:
+                parts.append(f"**Sample records (top {len(rows)}):**\n")
                 parts.append("| " + " | ".join(cols) + " |")
                 parts.append("| " + " | ".join(["---"] * len(cols)) + " |")
                 for row in rows:
@@ -590,13 +648,24 @@ def prepare_document_for_synthesis(file_path: Path, temp_dir: Path) -> Path:
 def execute_synthesis(doc_paths: List[str], num_goldens: int) -> List[Any]:
     llm = OllamaModel(model=LLM_MODEL, base_url=OLLAMA_URL)
     embedder = OllamaEmbeddingModel(model=EMBED_MODEL, base_url=OLLAMA_URL)
-    config = ContextConstructionConfig(embedder=embedder, critic_model=llm)
+    config = ContextConstructionConfig(
+        embedder=embedder,
+        critic_model=llm,
+        min_context_length=1,
+        max_context_length=1,
+        context_quality_threshold=0.0,
+    )
+    
+    # Ensure each document/context generates enough goldens to reach num_goldens in total
+    per_context = max(1, math.ceil(num_goldens / max(1, len(doc_paths))))
+    
     synthesizer = Synthesizer(model=llm, async_mode=False)
-    return synthesizer.generate_goldens_from_docs(
+    goldens = synthesizer.generate_goldens_from_docs(
         document_paths=doc_paths,
         context_construction_config=config,
-        max_goldens_per_context=num_goldens,
+        max_goldens_per_context=per_context,
     )
+    return goldens[:num_goldens]
 
 
 @app.get("/")
@@ -717,6 +786,8 @@ async def generate_goldens(
     except HTTPException:
         raise
     except Exception as exc:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Generation failed: {exc}")
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
